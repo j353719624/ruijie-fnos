@@ -31,6 +31,8 @@ kill_instance() {
 }
 
 start_app() {
+  # Windows 上打的包可能丢失可执行位，启动前补一次
+  [ -f "$APP_BIN" ] && chmod +x "$APP_BIN" 2>/dev/null || true
   echo "$(date) [INFO] 正在尝试启动后端..." >> "$LOG_FILE"
   if is_running; then
     if [ -S "$SOCKET_PATH" ]; then
