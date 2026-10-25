@@ -630,22 +630,53 @@ func publicConf(c routerConf) map[string]interface{} {
 	}
 }
 
+func stripAppPrefix(p string) string {
+	for _, prefix := range []string{"/app/" + appID, "/app/ruijie"} {
+		if strings.HasPrefix(p, prefix) {
+			p = strings.TrimPrefix(p, prefix)
+			break
+		}
+	}
+	if p == "" {
+		p = "/"
+	}
+	return p
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
-	if strings.HasPrefix(r.URL.Path, "/api/") {
+	path := stripAppPrefix(r.URL.Path)
+
+	if strings.HasPrefix(path, "/api/") {
 		switch {
-		case strings.HasPrefix(r.URL.Path, "/api/router"):
-			routerAPI(w, r, r.URL.Path)
-		case strings.HasSuffix(r.URL.Path, "/api/myip"):
+		case strings.HasPrefix(path, "/api/router"):
+			routerAPI(w, r, path)
+		case strings.HasSuffix(path, "/api/myip"):
 			writeOK(w, map[string]string{"ip": clientIP(r)})
 		default:
 			writeErr(w, "未知接口")
 		}
 		return
 	}
-	if strings.HasSuffix(r.URL.Path, ".html") || strings.HasSuffix(r.URL.Path, ".js") || strings.HasSuffix(r.URL.Path, ".css") {
+
+	root := wwwDir()
+	rel := path
+	if rel == "" || rel == "/" {
+		rel = "/index.html"
+	}
+	full := filepath.Join(root, filepath.FromSlash(rel))
+	if !strings.HasPrefix(full, filepath.Clean(root)+string(os.PathSeparator)) {
+		http.NotFound(w, r)
+		return
+	}
+	if fi, err := os.Stat(full); err != nil || fi.IsDir() {
+		http.NotFound(w, r)
+		return
+	}
+	switch strings.ToLower(filepath.Ext(full)) {
+	case ".html", ".js", ".css", ".mjs":
 		w.Header().Set("Cache-Control", "no-cache")
 	}
-	http.FileServer(http.Dir(wwwDir())).ServeHTTP(w, r)
+	http.ServeFile(w, r, full)
 }
 
 func clientIP(r *http.Request) string {
