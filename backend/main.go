@@ -408,6 +408,7 @@ func routerInfo(c routerConf) (map[string]interface{}, error) {
 			out["hardware"] = strOf(m["hardware_version"])
 			out["vendor"] = strOf(m["manufacturer"])
 			out["wan_ip"] = strOf(m["wan_ip"])
+			out["serial"] = strOf(m["serial_num"])
 			out["mode"] = strOf(m["relayMode"])
 		}
 	}
@@ -455,6 +456,199 @@ func routerClients(c routerConf) ([]map[string]interface{}, error) {
 	}
 	return out, nil
 }
+
+/* ------------------------------------------------------------------ */
+/* 通用命令通道（EWeb 前端的 devConfig/devSta/acConfig + system）        */
+/* ------------------------------------------------------------------ */
+
+// Cmd 调用 /cgi-bin/luci/api/cmd，method 形如 devConfig.get / devSta.get。
+func (r *ruijieClient) Cmd(method string, params map[string]interface{}) (json.RawMessage, error) {
+	if params == nil {
+		params = map[string]interface{}{}
+	}
+	if _, ok := params["device"]; !ok {
+		params["device"] = "pc"
+	}
+	out, err := r.post("/cgi-bin/luci/api/cmd?auth="+r.sid, map[string]interface{}{
+		"method": method, "params": params,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var resp struct {
+		Code  int             `json:"code"`
+		Data  json.RawMessage `json:"data"`
+		Error *struct {
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	if err := json.Unmarshal(out, &resp); err != nil {
+		return nil, fmt.Errorf("返回内容无法解析")
+	}
+	if resp.Error != nil && resp.Error.Message != "" {
+		return nil, fmt.Errorf("%s", resp.Error.Message)
+	}
+	if resp.Code != 0 {
+		return nil, fmt.Errorf("设备返回错误")
+	}
+	return resp.Data, nil
+}
+
+// System 调用 /cgi-bin/luci/api/system（重启等系统操作）。
+func (r *ruijieClient) System(method string, params interface{}) (json.RawMessage, error) {
+	out, err := r.post("/cgi-bin/luci/api/system?auth="+r.sid, map[string]interface{}{
+		"method": method, "params": params,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var resp struct {
+		Code  int             `json:"code"`
+		Data  json.RawMessage `json:"data"`
+		Error *struct {
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	if err := json.Unmarshal(out, &resp); err != nil {
+		return nil, fmt.Errorf("返回内容无法解析")
+	}
+	if resp.Error != nil && resp.Error.Message != "" {
+		return nil, fmt.Errorf("%s", resp.Error.Message)
+	}
+	return resp.Data, nil
+}
+
+func decodeMap(raw json.RawMessage) map[string]interface{} {
+	var m map[string]interface{}
+	_ = json.Unmarshal(raw, &m)
+	return m
+}
+
+// routerDashboard 汇总概览、网络、端口、无线、终端、租约与端口映射。
+func routerDashboard(c routerConf) (map[string]interface{}, error) {
+	cl, err := ruijieSession(c)
+	if err != nil {
+		return nil, err
+	}
+	out := map[string]interface{}{}
+
+	if info, err := routerInfo(c); err == nil {
+		out["info"] = info
+		if sn, ok := info["serial"].(string); ok {
+			out["serial"] = sn
+		}
+	}
+
+	if raw, err := cl.Cmd("devConfig.get", map[string]interface{}{"module": "network", "data": map[string]interface{}{}}); err == nil {
+		netmap := decodeMap(raw)
+		if wans, ok := netmap["wan"].([]interface{}); ok {
+			for _, w := range wans {
+				if m, ok := w.(map[string]interface{}); ok {
+					m["password"] = ""
+					if u, _ := m["username"].(string); len(u) > 4 {
+						m["username"] = u[:2] + "****" + u[len(u)-2:]
+					}
+				}
+			}
+		}
+		out["net"] = netmap
+	}
+
+	if raw, err := cl.Cmd("devSta.get", map[string]interface{}{"module": "port_status", "data": map[string]interface{}{}}); err == nil {
+		out["ports"] = decodeMap(raw)
+	}
+	if raw, err := cl.Cmd("acConfig.get", map[string]interface{}{"module": "wireless", "data": nil}); err == nil {
+		wm := decodeMap(raw)
+		if list, ok := wm["ssidList"].([]interface{}); ok {
+			for _, item := range list {
+				if m, ok := item.(map[string]interface{}); ok {
+					for _, k := range []string{"password", "key", "psk", "wpaKey"} {
+						if _, has := m[k]; has {
+							m[k] = "******"
+						}
+					}
+				}
+			}
+		}
+		out["wifi"] = wm
+	}
+	if raw, err := cl.Cmd("devSta.get", map[string]interface{}{"module": "user_list", "data": map[string]interface{}{"devType": "all", "dataType": "timely"}}); err == nil {
+		out["users"] = decodeMap(raw)
+	}
+	if raw, err := cl.Cmd("devSta.get", map[string]interface{}{"module": "dhcp_lease", "data": map[string]interface{}{}}); err == nil {
+		out["leases"] = decodeMap(raw)
+	}
+	if raw, err := cl.Cmd("devConfig.get", map[string]interface{}{"module": "port_mapping", "data": map[string]interface{}{}}); err == nil {
+		out["portmap"] = decodeMap(raw)
+	}
+	return out, nil
+}
+
+func routerReboot(c routerConf) error {
+	cl, err := ruijieSession(c)
+	if err != nil {
+		return err
+	}
+	_, err = cl.System("reboot", nil)
+	return err
+}
+
+func routerSetHostname(c routerConf, name string) error {
+	name = strings.TrimSpace(name)
+	if name == "" || len([]rune(name)) > 23 {
+		return fmt.Errorf("设备名称需为 1-23 个字符")
+	}
+	cl, err := ruijieSession(c)
+	if err != nil {
+		return err
+	}
+	sn := ""
+	if raw, err := cl.Call("overview", "getSysinfo", nil); err == nil {
+		sn = strOf(decodeMap(raw)["serial_num"])
+	}
+	data := map[string]interface{}{"name": name}
+	if sn != "" {
+		data["sn"] = []string{sn}
+	}
+	_, err = cl.Cmd("devConfig.set", map[string]interface{}{"module": "hostName", "data": data})
+	return err
+}
+
+func routerPortmapAdd(c routerConf, rule map[string]interface{}) error {
+	for _, k := range []string{"ruleName", "destIp", "destPort", "proto"} {
+		if strOf(rule[k]) == "" {
+			return fmt.Errorf("请填写完整规则：%s", k)
+		}
+	}
+	if rule["src"] == nil {
+		rule["src"] = ""
+	}
+	if rule["srcIp"] == nil {
+		rule["srcIp"] = ""
+	}
+	if rule["srcPort"] == nil {
+		rule["srcPort"] = "1-65535"
+	}
+	cl, err := ruijieSession(c)
+	if err != nil {
+		return err
+	}
+	_, err = cl.Cmd("devConfig.add", map[string]interface{}{"module": "port_mapping", "data": map[string]interface{}{"list": []interface{}{rule}}})
+	return err
+}
+
+func routerPortmapDel(c routerConf, names []string) error {
+	if len(names) == 0 {
+		return fmt.Errorf("请选择要删除的规则")
+	}
+	cl, err := ruijieSession(c)
+	if err != nil {
+		return err
+	}
+	_, err = cl.Cmd("devConfig.del", map[string]interface{}{"module": "port_mapping", "data": map[string]interface{}{"ruleName": names}})
+	return err
+}
+
 
 func strOf(v interface{}) string {
 	switch x := v.(type) {
@@ -601,6 +795,83 @@ func routerAPI(w http.ResponseWriter, r *http.Request, path string) {
 			return
 		}
 		writeOK(w, data)
+
+	case "dashboard":
+		if conf.Host == "" {
+			writeErr(w, "尚未配置路由器")
+			return
+		}
+		data, err := routerDashboard(conf)
+		if err != nil {
+			dropRuijieSession(conf.Host)
+			writeErr(w, err.Error())
+			return
+		}
+		writeOK(w, data)
+
+	case "reboot":
+		if r.Method != http.MethodPost {
+			writeErr(w, "请使用 POST")
+			return
+		}
+		if err := routerReboot(conf); err != nil {
+			dropRuijieSession(conf.Host)
+			writeErr(w, "重启指令下发失败："+err.Error())
+			return
+		}
+		writeOK(w, map[string]interface{}{"message": "重启指令已下发，设备将在约 1 分钟后恢复"})
+
+	case "hostname":
+		if r.Method != http.MethodPost {
+			writeErr(w, "请使用 POST")
+			return
+		}
+		var req struct {
+			Name string `json:"name"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeErr(w, "参数格式错误")
+			return
+		}
+		if err := routerSetHostname(conf, req.Name); err != nil {
+			writeErr(w, "修改失败："+err.Error())
+			return
+		}
+		writeOK(w, map[string]interface{}{"message": "设备名称已更新"})
+
+	case "portmap_add":
+		if r.Method != http.MethodPost {
+			writeErr(w, "请使用 POST")
+			return
+		}
+		var rule map[string]interface{}
+		if err := json.NewDecoder(r.Body).Decode(&rule); err != nil {
+			writeErr(w, "参数格式错误")
+			return
+		}
+		if err := routerPortmapAdd(conf, rule); err != nil {
+			writeErr(w, "添加失败："+err.Error())
+			return
+		}
+		writeOK(w, map[string]interface{}{"message": "端口映射已添加"})
+
+	case "portmap_delete":
+		if r.Method != http.MethodPost {
+			writeErr(w, "请使用 POST")
+			return
+		}
+		var req struct {
+			RuleName []string `json:"ruleName"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeErr(w, "参数格式错误")
+			return
+		}
+		if err := routerPortmapDel(conf, req.RuleName); err != nil {
+			writeErr(w, "删除失败："+err.Error())
+			return
+		}
+		writeOK(w, map[string]interface{}{"message": "端口映射已删除"})
 
 	case "all":
 		if conf.Host == "" {

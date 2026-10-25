@@ -1,5 +1,5 @@
 appname               = ruijie
-version               = V1.0.0-261026
+version               = V1.1.0-261026
 display_name          = RUIJIE
 desc                  = RUIJIE 是运行在 fnOS 上的锐捷（Ruijie）路由器管理应用，支持查看设备型号、固件、内存、WAN 地址与在线终端列表。
 platform              = x86

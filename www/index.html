@@ -5,33 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>锐捷路由器 · RUIJIE</title>
 <style>
-  :root{--bg:#fff;--card:#fff;--border:#e4e7ed;--text:#303133;--muted:#909399;--dim:#a8abb2;--field:#fff;--field-border:#dcdfe6;--soft:#f5f7fa;--primary:#409eff;--primary-dark:#337ecc;--success:#67c23a;--danger:#f56c6c;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+  :root{--bg:#fff;--card:#fff;--border:#e4e7ed;--text:#303133;--muted:#909399;--dim:#a8abb2;--field:#fff;--field-border:#dcdfe6;--soft:#f5f7fa;--primary:#409eff;--primary-dark:#337ecc;--success:#67c23a;--danger:#f56c6c;--warning:#e6a23c;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
   html[data-theme="dark"]{--bg:#121212;--card:#141414;--border:#1f2937;--text:#e5eaf3;--muted:#a3a6ad;--dim:#8d9095;--field:#1d1e1f;--field-border:#4c4d4f;--soft:#191a1c}
   *{box-sizing:border-box}html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
-  .page{max-width:1200px;margin:0 auto;padding:24px 24px 48px}
-  .head{display:flex;align-items:center;gap:12px;padding:4px 0 16px;margin-bottom:18px;border-bottom:1px solid var(--border)}
+  .page{max-width:1280px;margin:0 auto;padding:24px 24px 56px}
+  .head{display:flex;align-items:center;gap:12px;padding:4px 0 14px;margin-bottom:14px;border-bottom:1px solid var(--border)}
   .head-icon{width:40px;height:40px;border-radius:10px;flex:none;display:grid;place-items:center;background:rgba(64,158,255,.12);color:var(--primary)}
   .head-icon svg{width:22px;height:22px}
   .head-text{min-width:0;flex:1}
   .head-text h1{margin:0;font-size:18px;font-weight:700;line-height:26px}
-  .head-text p{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:17px}
+  .head-text p{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .head-actions{display:flex;gap:8px;flex:none}
   .card{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:20px 22px;margin-bottom:16px}
-  .card h2{margin:0 0 14px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card h2{margin:0 0 14px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:10px}
   .card h2 .hint{font-size:12px;font-weight:400;color:var(--muted)}
   .form{display:grid;grid-template-columns:1.4fr 1fr 1.2fr;gap:12px 14px;align-items:end}
   .field{display:flex;flex-direction:column;gap:6px;min-width:0}
   .field label{font-size:12px;color:var(--muted)}
-  .field input{height:38px;border:1px solid var(--field-border);background:var(--field);color:var(--text);border-radius:8px;padding:0 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
-  .field input:focus{border-color:var(--primary)}
+  .field input,.field select{height:38px;border:1px solid var(--field-border);background:var(--field);color:var(--text);border-radius:8px;padding:0 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+  .field input:focus,.field select:focus{border-color:var(--primary)}
   .form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-  button{height:38px;padding:0 18px;border-radius:8px;border:1px solid var(--field-border);background:var(--card);color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s}
+  button{height:36px;padding:0 16px;border-radius:8px;border:1px solid var(--field-border);background:var(--card);color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s}
   button:hover{border-color:var(--primary);color:var(--primary)}
   button.primary{background:var(--primary);border-color:var(--primary);color:#fff}
   button.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);color:#fff}
+  button.danger{color:var(--danger);border-color:rgba(245,108,108,.45)}
+  button.danger:hover{background:rgba(245,108,108,.08);border-color:var(--danger);color:var(--danger)}
+  button.mini{height:28px;padding:0 10px;font-size:12px;border-radius:7px}
   button:disabled{opacity:.55;cursor:not-allowed}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 26px}
+  .tabs{display:flex;gap:4px;padding:4px;margin:0 0 16px;border-radius:12px;background:var(--soft);border:1px solid var(--border);overflow-x:auto}
+  .tabs button{border:none;background:transparent;color:var(--muted);height:36px;padding:0 18px;border-radius:9px;white-space:nowrap}
+  .tabs button.on{background:var(--card);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 26px}
   .kv{display:flex;justify-content:space-between;gap:14px;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--border)}
   .kv:last-child{border-bottom:none}
   .kv span{color:var(--muted);flex:none}
@@ -40,15 +46,23 @@
   .bar i{display:block;height:100%;background:var(--primary);transition:width .3s}
   .row{display:flex;align-items:center;gap:10px}
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border)}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
   th{color:var(--dim);font-weight:600;font-size:12px;background:var(--soft)}
   td.mono{font-family:var(--mono);font-size:12.5px}
+  .table-wrap{overflow-x:auto}
+  .pill{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:99px;font-size:11.5px;background:var(--soft);color:var(--muted)}
+  .pill.on{background:rgba(103,194,58,.12);color:var(--success)}
+  .pill.off{background:rgba(144,147,153,.12);color:var(--muted)}
   .status{margin-top:12px;font-size:12.5px;color:var(--muted);min-height:18px}
   .status.ok{color:var(--success)}
   .status.err{color:var(--danger)}
   .empty{padding:26px 10px;text-align:center;color:var(--muted);font-size:13px}
   .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(48,49,51,.94);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:88vw}
   .toast.show{opacity:1}
+  .quick{display:flex;gap:8px;flex-wrap:wrap}
+  .inline-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 12px;align-items:end;margin-top:12px;padding-top:14px;border-top:1px dashed var(--border)}
+  .inline-form .field input,.inline-form .field select{height:36px}
+  .sub{margin:18px 0 8px;font-size:13px;font-weight:700;color:var(--muted)}
   @media(max-width:820px){.form{grid-template-columns:1fr}.page{padding:16px 14px 32px}.card{padding:16px 15px}}
 </style>
 </head>
@@ -62,11 +76,12 @@
     </div>
     <div class="head-actions">
       <button id="refresh">刷新</button>
+      <button id="settingsBtn">设置</button>
     </div>
   </header>
 
-  <section class="card">
-    <h2>连接设置 <span class="hint">登录锐捷 EWeb，只读获取状态与终端列表</span></h2>
+  <section class="card" id="settingsCard" style="display:none">
+    <h2>连接设置 <span class="hint">登录锐捷 EWeb；配置仅保存在这台 NAS 上</span></h2>
     <div class="form">
       <div class="field">
         <label for="host">路由器地址</label>
@@ -84,11 +99,20 @@
     <div class="form-actions">
       <button class="primary" id="save">保存并连接</button>
       <button id="test">测试连接</button>
+      <button id="closeSettings">收起</button>
     </div>
     <div class="status" id="settings-status"></div>
   </section>
 
-  <section id="content"></section>
+  <nav class="tabs" id="tabs">
+    <button data-tab="overview" class="on">概览</button>
+    <button data-tab="network">网络</button>
+    <button data-tab="wifi">无线</button>
+    <button data-tab="clients">终端</button>
+    <button data-tab="system">系统</button>
+  </nav>
+
+  <section id="content"><div class="card"><div class="empty">加载中…</div></div></section>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -104,81 +128,34 @@
 
 var $ = function(id){ return document.getElementById(id); };
 var hostEl = $('host'), userEl = $('username'), passEl = $('password');
-var settingsStatus = $('settings-status'), content = $('content'), sub = $('sub');
+var settingsCard = $('settingsCard'), settingsStatus = $('settings-status');
+var content = $('content'), sub = $('sub');
+var state = { data: null, configured: false, tab: 'overview' };
 
-function esc(s){
-  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
-}
-function dur(sec){
-  sec = Number(sec) || 0;
-  var d = Math.floor(sec/86400), h = Math.floor(sec%86400/3600), m = Math.floor(sec%3600/60);
-  return (d ? d + ' 天 ' : '') + h + ' 小时 ' + m + ' 分';
-}
-function mb(kb){ return (Number(kb||0)/1024).toFixed(0) + ' MB'; }
-function kv(k, v){ return '<div class="kv"><span>' + esc(k) + '</span><b>' + esc(v || '—') + '</b></div>'; }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function num(v){ var n = Number(v); return isNaN(n) ? 0 : n; }
+function dur(sec){ sec = num(sec); var d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60); return (d?d+' 天 ':'')+h+' 小时 '+m+' 分'; }
+function mb(kb){ return (num(kb)/1024).toFixed(0)+' MB'; }
+function bytes(v){ v=num(v); if(v<=0)return '0 B'; var u=['B','KB','MB','GB','TB'],i=0; while(v>=1024&&i<u.length-1){v/=1024;i++;} return v.toFixed(v>=100?0:1)+' '+u[i]; }
+function kv(k,v){ return '<div class="kv"><span>'+esc(k)+'</span><b>'+esc(v==null||v===''?'—':v)+'</b></div>'; }
+function pick(o, keys){ for(var i=0;i<keys.length;i++){ if(o && o[keys[i]]!=null && o[keys[i]]!=='') return o[keys[i]]; } return ''; }
 
 function toast(msg, isErr){
-  var t = $('toast');
-  t.textContent = msg;
+  var t = $('toast'); t.textContent = msg;
   t.style.background = isErr ? 'rgba(245,108,108,.96)' : 'rgba(48,49,51,.94)';
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  t.classList.add('show'); clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+function setSettingsStatus(msg, kind){ settingsStatus.textContent = msg || ''; settingsStatus.className = 'status' + (kind ? ' ' + kind : ''); }
+function api(path, opts){ return fetch('api/router/' + path, opts || {cache:'no-store'}).then(function(r){ return r.json().catch(function(){ throw new Error('返回内容无法解析'); }); }); }
+function post(path, body){ return api(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body||{})}); }
+
+function toggleSettings(force){
+  var show = force != null ? force : settingsCard.style.display === 'none';
+  settingsCard.style.display = show ? '' : 'none';
 }
 
-function setSettingsStatus(msg, kind){
-  settingsStatus.textContent = msg || '';
-  settingsStatus.className = 'status' + (kind ? ' ' + kind : '');
-}
-
-function api(path, opts){
-  return fetch('api/router/' + path, opts || {cache:'no-store'}).then(function(r){
-    return r.json().catch(function(){ throw new Error('返回内容无法解析'); });
-  });
-}
-
-function renderInfo(d){
-  var mem = d.mem_total ? Math.min(100, Math.round((d.mem_used || 0) * 100 / d.mem_total)) : 0;
-  var rows = (d.clients || []).map(function(c){
-    return '<tr><td class="mono">' + esc(c.ip) + '</td><td class="mono">' + esc(c.mac) +
-      '</td><td>' + esc(c.interface || c.device || '') + '</td></tr>';
-  }).join('') || '<tr><td colspan="3" class="empty">暂无终端</td></tr>';
-
-  sub.textContent = (d.host || '') + (d.model ? ' · ' + d.model : '') + (d.hostname ? ' · ' + d.hostname : '');
-
-  content.innerHTML =
-    '<section class="card"><h2>设备概况</h2><div class="grid">' +
-      kv('型号', d.model) + kv('主机名', d.hostname) + kv('固件版本', d.firmware) +
-      kv('硬件版本', d.hardware) + kv('运行时长', dur(d.uptime)) + kv('厂商', d.vendor) +
-    '</div></section>' +
-    '<section class="card"><h2>内存</h2>' +
-      '<div class="row" style="justify-content:space-between;font-size:13px"><span style="color:var(--muted)">已用 ' +
-      mb(d.mem_used) + ' / 共 ' + mb(d.mem_total) + '</span><b>' + mem + '%</b></div>' +
-      '<div class="bar"><i style="width:' + mem + '%"></i></div>' +
-    '</section>' +
-    '<section class="card"><h2>网络</h2><div class="grid">' +
-      kv('WAN 地址', d.wan_ip) + kv('工作模式', d.mode === 'none' ? '路由模式' : d.mode) +
-      kv('在线终端', (d.client_count != null ? d.client_count : (d.clients || []).length) + ' 台') +
-      kv('设备时间', d.local_time) +
-    '</div></section>' +
-    '<section class="card"><h2>在线终端（ARP）</h2><table><thead><tr><th>IP 地址</th><th>MAC 地址</th><th>接口</th></tr></thead><tbody>' +
-      rows + '</tbody></table></section>';
-}
-
-function loadAll(){
-  settingsStatus.textContent = '';
-  return api('all').then(function(j){
-    if (j.code !== 200) throw new Error(j.message || '读取失败');
-    renderInfo(j.data || {});
-  }).catch(function(e){
-    sub.textContent = '尚未连接路由器';
-    content.innerHTML = '<section class="card"><h2>无法连接路由器</h2><div class="empty">' +
-      esc(e.message || e) + '<br /><br />请在上方填写地址与账号后点击「保存并连接」。</div></section>';
-  });
-}
-
+/* ---------------- 配置 ---------------- */
 function loadConfig(){
   return api('config').then(function(j){
     if (j.code !== 200) return;
@@ -186,32 +163,24 @@ function loadConfig(){
     hostEl.value = c.host || '';
     userEl.value = c.username || '';
     passEl.value = '';
-    if (c.host) {
-      setSettingsStatus('已保存：' + c.host + ' · ' + (c.username || ''), 'ok');
-    } else {
-      setSettingsStatus('尚未配置路由器，请填写地址与账号。');
-    }
+    state.configured = !!c.host;
+    toggleSettings(!c.host);
+    if (c.host) setSettingsStatus('已保存：' + c.host + ' · ' + (c.username || ''), 'ok');
+    else setSettingsStatus('尚未配置路由器，请填写地址与账号。');
   }).catch(function(){});
 }
 
 function postConfig(kind){
-  var body = {
-    host: hostEl.value.trim(),
-    username: userEl.value.trim(),
-    password: passEl.value
-  };
+  var body = { host: hostEl.value.trim(), username: userEl.value.trim(), password: passEl.value };
   if (!body.host) { toast('请填写路由器地址', true); return; }
   if (!body.username) { toast('请填写用户名', true); return; }
-  if (!body.password && !kind) { toast('请填写密码', true); return; }
+  if (!body.password && !state.configured) { toast('请填写密码', true); return; }
 
-  var btns = [$('save'), $('test')];
-  btns.forEach(function(b){ b.disabled = true; });
+  var btns = [$('save'), $('test')]; btns.forEach(function(b){ b.disabled = true; });
   setSettingsStatus(kind === 'test' ? '正在测试连接…' : '正在保存并连接…');
 
   api(kind === 'test' ? 'test' : 'config', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(body)
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
   }).then(function(j){
     if (j.code !== 200) throw new Error(j.message || '操作失败');
     if (j.data && j.data.connected === false) {
@@ -220,27 +189,240 @@ function postConfig(kind){
       return;
     }
     passEl.value = '';
+    state.configured = true;
     setSettingsStatus('连接成功 · ' + new Date().toLocaleTimeString(), 'ok');
     toast(kind === 'test' ? '连接成功' : '已保存并连接');
-    return loadAll();
+    toggleSettings(false);
+    return loadDashboard();
   }).catch(function(e){
     setSettingsStatus(e.message || String(e), 'err');
     toast(e.message || String(e), true);
-  }).finally(function(){
-    btns.forEach(function(b){ b.disabled = false; });
+  }).finally(function(){ btns.forEach(function(b){ b.disabled = false; }); });
+}
+
+/* ---------------- 数据 ---------------- */
+function loadDashboard(){
+  return api('dashboard').then(function(j){
+    if (j.code !== 200) throw new Error(j.message || '读取失败');
+    state.data = j.data || {};
+    render();
+  }).catch(function(e){
+    sub.textContent = '读取失败';
+    content.innerHTML = '<section class="card"><h2>无法连接路由器</h2><div class="empty">' +
+      esc(e.message || e) + '<br /><br />检查地址与账号，或点击右上角「设置」。</div></section>';
   });
 }
 
+/* ---------------- 渲染 ---------------- */
+function render(){
+  var d = state.data || {}, info = d.info || {};
+  sub.textContent = [info.host, info.model, info.hostname].filter(Boolean).join(' · ') || '锐捷路由器';
+  if (state.tab === 'overview') content.innerHTML = viewOverview(d);
+  else if (state.tab === 'network') content.innerHTML = viewNetwork(d);
+  else if (state.tab === 'wifi') content.innerHTML = viewWifi(d);
+  else if (state.tab === 'clients') content.innerHTML = viewClients(d);
+  else content.innerHTML = viewSystem(d);
+  bindActions();
+}
+
+function viewOverview(d){
+  var info = d.info || {};
+  var mem = num(info.mem_total) ? Math.min(100, Math.round(num(info.mem_used)*100/num(info.mem_total))) : 0;
+  var net = d.net || {}, lan = (net.lan && net.lan[0]) || {}, wan = (net.wan && net.wan[0]) || {};
+  var users = (d.users && d.users.list) || [];
+  return '<section class="card"><h2>设备概况</h2><div class="grid">' +
+      kv('型号', info.model) + kv('主机名', info.hostname) + kv('固件版本', info.firmware) +
+      kv('硬件版本', info.hardware) + kv('运行时长', dur(info.uptime)) + kv('厂商', info.vendor) +
+    '</div></section>' +
+    '<section class="card"><h2>内存</h2><div class="row" style="justify-content:space-between;font-size:13px">' +
+      '<span style="color:var(--muted)">已用 ' + mb(info.mem_used) + ' / 共 ' + mb(info.mem_total) + '</span><b>' + mem + '%</b></div>' +
+      '<div class="bar"><i style="width:' + mem + '%"></i></div></section>' +
+    '<section class="card"><h2>网络概览</h2><div class="grid">' +
+      kv('WAN 地址', info.wan_ip) + kv('WAN 模式', wan.proto ? wan.proto.toUpperCase() : '') +
+      kv('LAN 地址', lan.ipaddr ? lan.ipaddr + '/' + (lan.netmask || '') : '') +
+      kv('在线终端', users.length + ' 台') + kv('设备时间', info.local_time) +
+    '</div></section>' +
+    '<section class="card"><h2>快捷操作</h2><div class="quick">' +
+      '<button class="danger" data-act="reboot">重启路由器</button>' +
+      '<button data-act="tab" data-tab="network">网络设置</button>' +
+      '<button data-act="tab" data-tab="clients">查看终端</button>' +
+    '</div></section>';
+}
+
+function viewNetwork(d){
+  var net = d.net || {}, wans = net.wan || [], lans = net.lan || [];
+  var portList = (d.ports && d.ports.List) || [];
+  var portRows = portList.map(function(p){
+    var on = String(p.status) === 'on';
+    return '<tr><td>' + esc(p.panel_name || p.name || ('Port ' + p.portId)) + '</td><td>' +
+      (on ? '<span class="pill on">已连接</span>' : '<span class="pill off">未连接</span>') +
+      '</td><td>' + esc(on ? (p.speed + ' Mbps') : '—') + '</td><td>' + esc(p.duplex || '') + '</td></tr>';
+  }).join('') || '<tr><td colspan="4" class="empty">未读取到端口信息</td></tr>';
+  var wanRows = wans.map(function(w, i){
+    return '<tr><td>WAN' + (i + 1) + '</td><td>' + esc((w.proto || '').toUpperCase()) + '</td><td class="mono">' +
+      esc(w.ipaddr || (w.proto === 'dhcp' ? '自动获取' : '')) + '</td><td class="mono">' + esc(w.dns || '') +
+      '</td><td class="mono">' + esc(w.macaddr || '') + '</td><td>' + esc(w.mtu || '') + '</td></tr>';
+  }).join('') || '<tr><td colspan="6" class="empty">未读取到 WAN 信息</td></tr>';
+
+  var lanRows = lans.map(function(l){
+    return '<tr><td class="mono">' + esc(l.ipaddr) + '</td><td class="mono">' + esc(l.netmask) +
+      '</td><td>' + esc(l.proto === 'static' ? '静态' : '动态') + '</td><td>' + esc(l.leasetime ? (num(l.leasetime)/60).toFixed(0) + ' 分钟' : '') +
+      '</td><td>' + esc(l.limit || '') + '</td></tr>';
+  }).join('') || '<tr><td colspan="5" class="empty">未读取到 LAN 信息</td></tr>';
+
+  var rules = (d.portmap && d.portmap.portMapping) || [];
+  var ruleRows = rules.map(function(r){
+    return '<tr><td>' + esc(r.ruleName) + '</td><td class="mono">' + esc(r.srcIp || '全部') + ' : ' + esc(r.srcPort || '') +
+      '</td><td class="mono">' + esc(r.destIp) + ' : ' + esc(r.destPort) + '</td><td>' + esc(r.proto) +
+      '</td><td><button class="mini danger" data-act="pm-del" data-name="' + esc(r.ruleName) + '">删除</button></td></tr>';
+  }).join('') || '<tr><td colspan="5" class="empty">暂无端口映射</td></tr>';
+
+  return '<section class="card"><h2>端口状态</h2><div class="table-wrap"><table><thead><tr><th>端口</th><th>状态</th><th>速率</th><th>双工</th></tr></thead><tbody>' + portRows + '</tbody></table></div></section>' +
+    '<section class="card"><h2>WAN</h2><div class="table-wrap"><table><thead><tr><th>接口</th><th>模式</th><th>地址</th><th>DNS</th><th>MAC</th><th>MTU</th></tr></thead><tbody>' + wanRows + '</tbody></table></div></section>' +
+    '<section class="card"><h2>LAN</h2><div class="table-wrap"><table><thead><tr><th>地址</th><th>掩码</th><th>模式</th><th>租期</th><th>地址池</th></tr></thead><tbody>' + lanRows + '</tbody></table></div></section>' +
+    '<section class="card"><h2>端口映射 <span class="hint">把外网端口转发到内网设备</span></h2><div class="table-wrap"><table><thead><tr><th>名称</th><th>外部</th><th>内部</th><th>协议</th><th></th></tr></thead><tbody>' + ruleRows + '</tbody></table></div>' +
+    '<div class="inline-form" id="pmForm">' +
+      '<div class="field"><label>规则名称</label><input id="pmName" placeholder="例如 NAS" /></div>' +
+      '<div class="field"><label>内部地址</label><input id="pmIp" placeholder="192.168.110.97" /></div>' +
+      '<div class="field"><label>内部端口</label><input id="pmDest" placeholder="5000" /></div>' +
+      '<div class="field"><label>外部端口</label><input id="pmSrc" placeholder="5000" /></div>' +
+      '<div class="field"><label>协议</label><select id="pmProto"><option value="tcp">TCP</option><option value="udp">UDP</option><option value="tcp+udp">TCP+UDP</option></select></div>' +
+      '<div class="field"><label>&nbsp;</label><button class="primary" data-act="pm-add">添加映射</button></div>' +
+    '</div></section>';
+}
+
+function viewWifi(d){
+  var w = d.wifi || {};
+  var radios = (w.radioList || []).map(function(r){
+    return '<tr><td>' + esc(r.type) + '</td><td>' + esc(r.hwmode) + '</td><td>' + esc(r.bandWidth) + ' MHz</td><td>' +
+      (String(r.enable) === 'true' ? '<span class="pill on">启用</span>' : '<span class="pill off">关闭</span>') + '</td></tr>';
+  }).join('') || '<tr><td colspan="4" class="empty">未读取到射频信息</td></tr>';
+
+  var ssids = (w.ssidList || []).map(function(s){
+    var name = pick(s, ['ssid', 'ssidName', 'name']);
+    var band = pick(s, ['band', 'radioType', 'type']);
+    var enable = pick(s, ['enable', 'enabled']);
+    var hidden = pick(s, ['hidden', 'hideSsid', 'broadcast']);
+    return '<tr><td>' + esc(name) + '</td><td>' + esc(band) + '</td><td>' +
+      (String(enable) === 'true' ? '<span class="pill on">启用</span>' : '<span class="pill off">关闭</span>') + '</td><td>' +
+      (String(hidden) === 'true' ? '隐藏' : '广播') + '</td></tr>';
+  }).join('') || '<tr><td colspan="4" class="empty">未读取到 SSID</td></tr>';
+
+  return '<section class="card"><h2>射频</h2><div class="table-wrap"><table><thead><tr><th>频段</th><th>模式</th><th>带宽</th><th>状态</th></tr></thead><tbody>' + radios + '</tbody></table></div></section>' +
+    '<section class="card"><h2>SSID</h2><div class="table-wrap"><table><thead><tr><th>名称</th><th>频段</th><th>状态</th><th>广播</th></tr></thead><tbody>' + ssids + '</tbody></table></div>' +
+    '<div class="status">Wi-Fi 的修改涉及射频重启，当前版本先提供完整只读信息；需要改 SSID/密码可以再做。</div></section>';
+}
+
+function viewClients(d){
+  var users = (d.users && d.users.list) || [];
+  var rows = users.map(function(u){
+    return '<tr><td>' + esc(u.name || u.hostName || '未知设备') + '</td><td class="mono">' + esc(u.userIp) +
+      '</td><td class="mono">' + esc(u.mac) + '</td><td>' + (u.connectType === 'wire' ? '有线' : (u.connectType || '')) +
+      '</td><td>' + esc(u.ssid || '') + '</td><td>' + bytes(u.up) + ' / ' + bytes(u.down) + '</td></tr>';
+  }).join('') || '<tr><td colspan="6" class="empty">暂无在线终端</td></tr>';
+
+  var leases = (d.leases && d.leases.List) || [];
+  var leaseRows = leases.map(function(l){
+    return '<tr><td class="mono">' + esc(l.ip) + '</td><td class="mono">' + esc(l.mac) + '</td><td>' + esc(l.hostname || '') +
+      '</td><td>' + (num(l.leasetime) ? Math.max(0, Math.floor(num(l.leasetime)/60)) + ' 分钟' : '') + '</td></tr>';
+  }).join('') || '<tr><td colspan="4" class="empty">暂无租约</td></tr>';
+
+  return '<section class="card"><h2>在线终端 <span class="hint">' + users.length + ' 台</span></h2><div class="table-wrap"><table><thead><tr><th>名称</th><th>IP</th><th>MAC</th><th>接入</th><th>SSID</th><th>上传 / 下载</th></tr></thead><tbody>' + rows + '</tbody></table></div></section>' +
+    '<section class="card"><h2>DHCP 租约</h2><div class="table-wrap"><table><thead><tr><th>IP</th><th>MAC</th><th>主机名</th><th>剩余</th></tr></thead><tbody>' + leaseRows + '</tbody></table></div></section>';
+}
+
+function viewSystem(d){
+  var info = d.info || {};
+  return '<section class="card"><h2>设备名称 <span class="hint">不超过 23 个字符</span></h2>' +
+      '<div class="inline-form" style="border-top:none;padding-top:0;margin-top:0">' +
+      '<div class="field"><label>主机名</label><input id="hostName" value="' + esc(info.hostname || '') + '" /></div>' +
+      '<div class="field"><label>&nbsp;</label><button class="primary" data-act="hostname">保存</button></div></div></section>' +
+    '<section class="card"><h2>设备操作</h2><div class="quick">' +
+      '<button class="danger" data-act="reboot">重启路由器</button>' +
+      '<button data-act="reload">重新读取</button>' +
+    '</div><div class="status">重启后管理页面会中断约 1 分钟；不会改动任何配置。</div></section>';
+}
+
+/* ---------------- 操作 ---------------- */
+function bindActions(){
+  content.querySelectorAll('[data-act]').forEach(function(el){
+    var act = el.getAttribute('data-act');
+    if (act === 'tab') {
+      el.addEventListener('click', function(){ switchTab(el.getAttribute('data-tab')); });
+    } else if (act === 'reboot') {
+      el.addEventListener('click', function(){
+        if (!confirm('确定要重启路由器吗？重启期间网络会中断约 1 分钟。')) return;
+        el.disabled = true;
+        post('reboot').then(function(j){
+          if (j.code !== 200) throw new Error(j.message || '操作失败');
+          toast('重启指令已下发');
+        }).catch(function(e){ toast(e.message || String(e), true); }).finally(function(){ el.disabled = false; });
+      });
+    } else if (act === 'hostname') {
+      el.addEventListener('click', function(){
+        var name = $('hostName').value.trim();
+        if (!name) { toast('请输入设备名称', true); return; }
+        el.disabled = true;
+        post('hostname', {name: name}).then(function(j){
+          if (j.code !== 200) throw new Error(j.message || '操作失败');
+          toast('设备名称已更新');
+          loadDashboard();
+        }).catch(function(e){ toast(e.message || String(e), true); }).finally(function(){ el.disabled = false; });
+      });
+    } else if (act === 'pm-add') {
+      el.addEventListener('click', function(){
+        var rule = {
+          ruleName: $('pmName').value.trim(),
+          destIp: $('pmIp').value.trim(),
+          destPort: $('pmDest').value.trim(),
+          srcPort: $('pmSrc').value.trim() || '1-65535',
+          srcIp: '', src: '',
+          proto: $('pmProto').value
+        };
+        if (!rule.ruleName || !rule.destIp || !rule.destPort) { toast('请填写规则名称、内部地址和端口', true); return; }
+        el.disabled = true;
+        post('portmap_add', rule).then(function(j){
+          if (j.code !== 200) throw new Error(j.message || '操作失败');
+          toast('端口映射已添加');
+          loadDashboard();
+        }).catch(function(e){ toast(e.message || String(e), true); }).finally(function(){ el.disabled = false; });
+      });
+    } else if (act === 'pm-del') {
+      el.addEventListener('click', function(){
+        var name = el.getAttribute('data-name');
+        if (!confirm('删除端口映射「' + name + '」？')) return;
+        el.disabled = true;
+        post('portmap_delete', {ruleName: [name]}).then(function(j){
+          if (j.code !== 200) throw new Error(j.message || '操作失败');
+          toast('端口映射已删除');
+          loadDashboard();
+        }).catch(function(e){ toast(e.message || String(e), true); }).finally(function(){ el.disabled = false; });
+      });
+    } else if (act === 'reload') {
+      el.addEventListener('click', function(){ loadDashboard(); });
+    }
+  });
+}
+
+function switchTab(tab){
+  state.tab = tab;
+  document.querySelectorAll('#tabs button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-tab') === tab); });
+  render();
+}
+
+/* ---------------- 绑定 ---------------- */
+$('tabs').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-tab]');
+  if (b) switchTab(b.getAttribute('data-tab'));
+});
 $('save').addEventListener('click', function(){ postConfig('save'); });
 $('test').addEventListener('click', function(){ postConfig('test'); });
-$('refresh').addEventListener('click', function(){
-  loadAll().then(function(){ toast('已刷新'); });
-});
-passEl.addEventListener('keydown', function(e){
-  if (e.key === 'Enter') postConfig('save');
-});
+$('closeSettings').addEventListener('click', function(){ if (state.configured) toggleSettings(false); });
+$('settingsBtn').addEventListener('click', function(){ toggleSettings(); });
+$('refresh').addEventListener('click', function(){ loadDashboard().then(function(){ toast('已刷新'); }); });
+passEl.addEventListener('keydown', function(e){ if (e.key === 'Enter') postConfig('save'); });
 
-loadConfig().then(loadAll);
+loadConfig().then(loadDashboard);
 </script>
 </body>
 </html>
