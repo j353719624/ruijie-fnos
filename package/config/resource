@@ -1,0 +1,18 @@
+{
+    "data-share":
+    {
+        "shares":
+        [
+            {
+                "name": "RUIJIE",
+                "permission":
+                {
+                    "rw":
+                    [
+                        "ruijie"
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,4 @@
+dist/
+*.fpk
+config/router.json
+backend/prebuilt/

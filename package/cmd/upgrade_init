@@ -1,0 +1,10 @@
+#!/bin/bash
+APP_BIN="/usr/local/apps/@appcenter/ruijie/server/ruijie_service"
+pkill -TERM -f "^$APP_BIN" 2>/dev/null || true
+for i in {1..10}; do
+  pgrep -f "^$APP_BIN" >/dev/null 2>&1 || break
+  sleep 0.2
+done
+pkill -9 -f "^$APP_BIN" >/dev/null 2>&1 || true
+rm -f /tmp/ruijie.pid /var/apps/ruijie/target/ruijie >/dev/null 2>&1 || true
+exit 0

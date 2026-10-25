@@ -1,0 +1,14 @@
+{
+    ".url": {
+        "ruijie.Application": {
+            "title": "RUIJIE",
+            "icon": "images/icon_{0}.png",
+            "type": "iframe",
+            "protocol": "http",
+            "gatewaySocket": "ruijie",
+            "gatewayPrefix": "/app/ruijie",
+            "url": "/cgi/ThirdParty/ruijie/index.cgi/",
+            "allUsers": false
+        }
+    }
+}
